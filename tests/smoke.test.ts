@@ -3,7 +3,7 @@ import { createApp } from '../src/app';
 
 describe('app bootstrap', () => {
   it('creates an Express application', () => {
-    const app = createApp();
+    const app = createApp({ databasePath: ':memory:' });
     expect(app).toBeDefined();
     expect(typeof app.listen).toBe('function');
   });

@@ -6,3 +6,4 @@ dist/
 coverage/
 _boot-out.txt
 _boot-err.txt
+data/*.db

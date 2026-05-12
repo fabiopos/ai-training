@@ -11,7 +11,16 @@ function parsePort(raw: string | undefined, fallback: number): number {
   return n;
 }
 
+function parseDatabasePath(raw: string | undefined): string {
+  const trimmed = raw?.trim();
+  if (trimmed) {
+    return trimmed;
+  }
+  return './data/bookmarks.db';
+}
+
 export const env = {
   port: parsePort(process.env.PORT, 3001),
   nodeEnv: process.env.NODE_ENV ?? 'development',
+  databasePath: parseDatabasePath(process.env.DATABASE_PATH),
 } as const;

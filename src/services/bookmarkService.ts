@@ -1,5 +1,11 @@
 import type { SqliteDatabase } from '../db/sqliteTypes';
-import { bookmarkEntitySchema, type Bookmark } from '../models/bookmark';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  bookmarkEntitySchema,
+  normalizeTags,
+  type Bookmark,
+  type CreateBookmarkBody,
+} from '../models/bookmark';
 
 type BookmarkRow = {
   id: string;
@@ -74,6 +80,32 @@ export function listBookmarks(
     return all;
   }
   return filterBookmarksByTagsAny(all, filterTags);
+}
+
+export function createBookmark(
+  db: SqliteDatabase,
+  body: CreateBookmarkBody,
+): Bookmark {
+  const bookmark: Bookmark = {
+    id: uuidv4(),
+    url: body.url,
+    title: body.title,
+    description: body.description ?? null,
+    tags: normalizeTags(body.tags),
+  };
+
+  const stmt = db.prepare(
+    'INSERT INTO bookmarks (id, url, title, description, tags) VALUES (?, ?, ?, ?, ?)',
+  );
+  stmt.run(
+    bookmark.id,
+    bookmark.url,
+    bookmark.title,
+    bookmark.description,
+    JSON.stringify(bookmark.tags),
+  );
+
+  return bookmark;
 }
 
 export function findBookmarkById(db: SqliteDatabase, id: string): Bookmark | null {

@@ -17,11 +17,11 @@ export const bookmarkEntitySchema = z.object({
 
 export type Bookmark = z.infer<typeof bookmarkEntitySchema>;
 
-/** Request body for creating a bookmark (used by POST in a later chunk) */
+/** Request body for creating a bookmark. */
 export const createBookmarkBodySchema = z.object({
   url: z.string().url(),
-  title: z.string().min(1),
-  description: z.string().optional(),
+  title: z.string().trim().min(1),
+  description: z.string().trim().optional(),
   tags: z.array(z.string()).optional(),
 });
 
@@ -41,6 +41,25 @@ export function parseTagsQueryParam(raw: string): string[] {
     }
     seen.add(token);
     out.push(token);
+  }
+  return out;
+}
+
+/** Normalize user-provided tags for storage: trim, lowercase, dedupe, drop empties. */
+export function normalizeTags(rawTags: string[] | undefined): string[] {
+  if (!rawTags) {
+    return [];
+  }
+
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const rawTag of rawTags) {
+    const tag = rawTag.trim().toLowerCase();
+    if (!tag || seen.has(tag)) {
+      continue;
+    }
+    seen.add(tag);
+    out.push(tag);
   }
   return out;
 }

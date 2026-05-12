@@ -1,8 +1,20 @@
 import type { RequestHandler } from 'express';
 import type { SqliteDatabase } from '../db/sqliteTypes';
-import { bookmarkIdSchema } from '../models/bookmark';
+import { bookmarkIdSchema, createBookmarkBodySchema } from '../models/bookmark';
 import { HttpError } from '../middleware/httpError';
-import { findBookmarkById } from '../services/bookmarkService';
+import { createBookmark, findBookmarkById } from '../services/bookmarkService';
+
+export function makeCreateBookmark(db: SqliteDatabase): RequestHandler {
+  return (req, res, next) => {
+    try {
+      const body = createBookmarkBodySchema.parse(req.body);
+      const bookmark = createBookmark(db, body);
+      res.status(201).json(bookmark);
+    } catch (err) {
+      next(err);
+    }
+  };
+}
 
 export function makeGetBookmarkById(db: SqliteDatabase): RequestHandler {
   return (req, res, next) => {

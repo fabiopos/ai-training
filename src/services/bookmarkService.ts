@@ -5,6 +5,7 @@ import {
   normalizeTags,
   type Bookmark,
   type CreateBookmarkBody,
+  type UpdateBookmarkBody,
 } from '../models/bookmark';
 
 type BookmarkRow = {
@@ -13,6 +14,10 @@ type BookmarkRow = {
   title: string;
   description: string | null;
   tags: string;
+};
+
+type RunResult = {
+  changes?: number | bigint;
 };
 
 function parseTagsJson(raw: string): string[] {
@@ -104,6 +109,37 @@ export function createBookmark(
     bookmark.description,
     JSON.stringify(bookmark.tags),
   );
+
+  return bookmark;
+}
+
+export function updateBookmark(
+  db: SqliteDatabase,
+  id: string,
+  body: UpdateBookmarkBody,
+): Bookmark | null {
+  const bookmark: Bookmark = {
+    id,
+    url: body.url,
+    title: body.title,
+    description: body.description ?? null,
+    tags: normalizeTags(body.tags),
+  };
+
+  const stmt = db.prepare(
+    'UPDATE bookmarks SET url = ?, title = ?, description = ?, tags = ? WHERE id = ?',
+  );
+  const result = stmt.run(
+    bookmark.url,
+    bookmark.title,
+    bookmark.description,
+    JSON.stringify(bookmark.tags),
+    bookmark.id,
+  ) as RunResult;
+
+  if (result.changes === 0 || result.changes === 0n) {
+    return null;
+  }
 
   return bookmark;
 }

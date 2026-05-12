@@ -27,6 +27,16 @@ export const createBookmarkBodySchema = z.object({
 
 export type CreateBookmarkBody = z.infer<typeof createBookmarkBodySchema>;
 
+/** Request body for replacing a bookmark's editable fields. */
+export const updateBookmarkBodySchema = z.object({
+  url: z.string().url(),
+  title: z.string().trim().min(1),
+  description: z.string().trim().optional(),
+  tags: z.array(z.string()),
+});
+
+export type UpdateBookmarkBody = z.infer<typeof updateBookmarkBodySchema>;
+
 /**
  * Parse `?tags=a,b` (and similar) into filter tokens: trim, lowercase, dedupe.
  * Empty segments are dropped. Order is first-seen.

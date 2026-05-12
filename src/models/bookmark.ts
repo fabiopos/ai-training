@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
-/** UUID path/query param for bookmark routes */
-export const bookmarkIdSchema = z.string().uuid();
+/** UUID path param: trim, lowercase, then validate (SQLite id match is case-sensitive). */
+export const bookmarkIdSchema = z.preprocess(
+  (v) => (typeof v === 'string' ? v.trim().toLowerCase() : v),
+  z.string().uuid(),
+);
 
 /** Stored and returned bookmark entity */
 export const bookmarkEntitySchema = z.object({

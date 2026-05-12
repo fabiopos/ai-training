@@ -144,6 +144,12 @@ export function updateBookmark(
   return bookmark;
 }
 
+export function deleteBookmark(db: SqliteDatabase, id: string): boolean {
+  const stmt = db.prepare('DELETE FROM bookmarks WHERE id = ?');
+  const result = stmt.run(id) as RunResult;
+  return result.changes !== 0 && result.changes !== 0n;
+}
+
 export function findBookmarkById(db: SqliteDatabase, id: string): Bookmark | null {
   const stmt = db.prepare(
     'SELECT id, url, title, description, tags FROM bookmarks WHERE id = ?',

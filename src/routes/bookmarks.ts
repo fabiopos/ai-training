@@ -2,6 +2,7 @@ import { Router } from 'express';
 import type { SqliteDatabase } from '../db/sqliteTypes';
 import {
   makeCreateBookmark,
+  makeDeleteBookmark,
   makeGetBookmarkById,
   makeUpdateBookmark,
 } from '../controllers/bookmarkController';
@@ -12,6 +13,7 @@ export function createBookmarksRouter(db: SqliteDatabase): Router {
   router.get('/', makeListBookmarks(db));
   router.post('/', makeCreateBookmark(db));
   router.put('/:id', makeUpdateBookmark(db));
+  router.delete('/:id', makeDeleteBookmark(db));
   router.get('/:id', makeGetBookmarkById(db));
   return router;
 }

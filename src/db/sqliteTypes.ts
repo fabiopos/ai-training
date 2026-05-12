@@ -5,6 +5,8 @@
  */
 export interface SqliteStatement {
   get(...params: unknown[]): Record<string, unknown> | undefined;
+  all(...params: unknown[]): Record<string, unknown>[];
+  run(...params: unknown[]): unknown;
 }
 
 export interface SqliteDatabase {

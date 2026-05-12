@@ -23,3 +23,21 @@ export const createBookmarkBodySchema = z.object({
 });
 
 export type CreateBookmarkBody = z.infer<typeof createBookmarkBodySchema>;
+
+/**
+ * Parse `?tags=a,b` (and similar) into filter tokens: trim, lowercase, dedupe.
+ * Empty segments are dropped. Order is first-seen.
+ */
+export function parseTagsQueryParam(raw: string): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const part of raw.split(',')) {
+    const token = part.trim().toLowerCase();
+    if (!token || seen.has(token)) {
+      continue;
+    }
+    seen.add(token);
+    out.push(token);
+  }
+  return out;
+}
